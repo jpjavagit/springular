@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+	
+	 <script src="http://code.angularjs.org/1.0.7/angular.min.js"></script>
+	 
+	 <script>
+
+		function AngularController($scope){
+
+			$scope.cardapio = [
+													
+             	{descricao: 'Hamburguer', preco: 8.0},
+             	{descricao: 'Refrigerante', preco: 2.0},
+             	{descricao: 'Fritas', preco: 5.0}
+
+			];
+
+			$scope.pedidos=[];
+			$scope.total=0;
+
+			$scope.fazerPedido = function(){
+
+				var pedido = angular.copy($scope.pedido);
+				$scope.pedidos.push(pedido);
+				$scope.calcularTotal();				
+
+			};
+
+			$scope.calcularTotal = function(){
+
+				$scope.total = 0;
+				angular.forEach($scope.pedidos, function(pedido){
+					$scope.total += pedido.item.preco;
+				});
+			}
+		}	
+		
+	 </script>
+
+<meta charset="UTF-8">
+<title>Angular JS</title>
+</head>
+<body ng-controller="AngularController">
+	<input type="text" ng-model="criterio"
+		placeholder="Digite o criterio de busca"/>
+	<ul>
+		<li ng-repeat="item in cardapio | filter:criterio">
+			{{item.descricao | uppercase}} 
+		</li>
+	</ul>	
+	<span ng-show="(cardapio | filter:criterio).length == 0">
+		Nenhum item foi encontrado
+	</span>
+	<hr/>
+	<input type="number" ng-model="pedido.codigo" placeholder="Código da mesa"/>
+	<select ng-model="pedido.item" ng-options="item.descricao for item in cardapio">
+		<option value="">Selecione um item...</option>
+	</select>
+	
+	<button ng-click="fazerPedido()">Fazer Pedido!</button>	
+	
+	<ul>
+		<li ng-repeat="pedido in pedidos">
+			{{pedido.item.descricao}} - {{pedido.item.preco | currency}}
+		</li>
+	</ul>
+	
+	<span>Total: {{total | currency}}</span>
+</body>
+</html>

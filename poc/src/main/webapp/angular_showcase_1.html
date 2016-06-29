@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<meta charset="UTF-8">
+<script src="http://code.angularjs.org/1.0.7/angular.min.js"></script>
+	
+	<title>Angular Pratice</title>
+	
+	<script>
+
+		function Controller($scope){
+			$scope.nome = "";	
+
+			$scope.makeOrder = function(){
+				alert('Order ' + $scope.nome + ' is done!');
+			}
+		}
+		
+	</script>
+	
+</head>
+<body ng-controller="Controller"> 
+
+	<form name="doOrder">
+	
+		<input type="text" ng-required="true" ng-maxlength="10" name="name" ng-model="nome"/>
+		
+		<button ng-click="makeOrder()" ng-disabled="doOrder.name.$invalid" >Make your Order!</button>
+		
+	</form>
+	
+	<span ng-show="doOrder.name.$error.required">
+		Nome é obrigatório
+	</span>
+	
+	<p>Código – Pristine: {{doOrder.codigo.$pristine}}</p>
+  	<p>Código – Dirty: {{doOrder.name.$dirty}}</p>
+  	<p>Código – Valid: {{doOrder.name.$valid}}</p>
+  	<p>Código – Invalid: {{doOrder.name.$invalid}}</p>
+  	<p>Código – Error: {{doOrder.name.$error}}</p>
+	
+</body>
+</html>

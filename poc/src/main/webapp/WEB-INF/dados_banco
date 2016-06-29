@@ -1,0 +1,203 @@
+Crie o banco dessa forma:
+
+Nome Banco: poc_academico
+Usuario:postgres
+senha:root
+
+Tabelas:
+
+CREATE SEQUENCE codigo_aluno_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 2
+  CACHE 1;
+ALTER TABLE codigo_aluno_seq
+  OWNER TO postgres;
+
+CREATE SEQUENCE codigo_solicitar_servico_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 27
+  CACHE 1;
+ALTER TABLE codigo_solicitar_servico_seq
+  OWNER TO postgres;
+
+
+-- 1º Table: users
+
+CREATE TABLE users
+(
+  codigo_aluno bigint NOT NULL DEFAULT nextval('codigo_aluno_seq'::regclass),
+  username character varying(45) NOT NULL,
+  password character varying(45) NOT NULL,
+  primeiro_nome character(30) NOT NULL,
+  ultimo_nome character(50),
+  enabled boolean NOT NULL DEFAULT true,
+  CONSTRAINT users_pkey PRIMARY KEY (codigo_aluno)
+)
+
+-- 2º Table: user_roles
+ --------------------------------------------------------------
+
+CREATE TABLE user_roles
+(
+  user_role_id integer NOT NULL,
+  username character varying(45) NOT NULL,
+  codigo_aluno bigint NOT NULL,
+  role character varying(45) NOT NULL,
+  CONSTRAINT user_roles_pkey PRIMARY KEY (user_role_id),
+  CONSTRAINT fk_username FOREIGN KEY (codigo_aluno)
+      REFERENCES users (codigo_aluno) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+
+ --------------------------------------------------------------
+  
+  -- 3º Table: tb_disciplina
+
+CREATE TABLE tb_disciplina
+(
+  cod_disciplina bigint NOT NULL,
+  nome_disciplina character(50),
+  CONSTRAINT pk_disciplina PRIMARY KEY (cod_disciplina)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE tb_disciplina
+  OWNER TO postgres;
+
+
+--------------------------------------------------------------
+
+-- 4º Table: tb_disciplinas_notas
+
+CREATE TABLE tb_disciplinas_notas
+(
+  cod_disciplina_nota bigint NOT NULL,
+  cod_disciplina bigint,
+  nota integer,
+  cod_aluno bigint,
+  semestre character(4),
+  CONSTRAINT pk_disciplina_nota PRIMARY KEY (cod_disciplina_nota),
+  CONSTRAINT fk_disciplina FOREIGN KEY (cod_disciplina)
+      REFERENCES tb_disciplina (cod_disciplina) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_disciplina_nota_aluno FOREIGN KEY (cod_aluno)
+      REFERENCES users (codigo_aluno) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+
+--------------------------------------------------------------
+-- 5º Table: tb_servico
+
+CREATE TABLE tb_servico
+(
+  cod_servico bigint NOT NULL,
+  descricao character(100),
+  CONSTRAINT pk_servico PRIMARY KEY (cod_servico)
+)
+
+--------------------------------------------------------------
+-- 6º Table: tb_solicitar_servico
+
+CREATE TABLE tb_solicitar_servico
+(
+  cod_solicitar_servico bigint NOT NULL DEFAULT nextval('codigo_solicitar_servico_seq'::regclass),
+  cod_solicitacao bigint,
+  data_solicitacao date,
+  codigo_aluno bigint,
+  CONSTRAINT pk_solicitacao_servico PRIMARY KEY (cod_solicitar_servico),
+  CONSTRAINT fk_soliciar_servico_solicitacao FOREIGN KEY (cod_solicitacao)
+      REFERENCES tb_servico (cod_servico) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_solicitacao_aluno FOREIGN KEY (codigo_aluno)
+      REFERENCES users (codigo_aluno) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+
+--------------------------------------------------------------
+
+Scripts de Insert
+
+INSERT INTO users(
+            codigo_aluno, username, password, primeiro_nome, ultimo_nome, 
+            enabled)
+    VALUES (1, 'puc@puc.com', '123456', 'Puc', '', 
+            true);
+
+--------------------------------------------------------------
+
+INSERT INTO user_roles(
+            user_role_id, username, codigo_aluno, role)
+    VALUES (1, 'puc@puc.com', 1, 'ROLE_ADMIN');
+
+
+INSERT INTO tb_servico(
+            cod_servico, descricao)
+    VALUES (1, 'Solicitar Declaração de Matrícula');
+
+INSERT INTO tb_servico(
+            cod_servico, descricao)
+    VALUES (2, 'Solicitar Diploma');
+
+INSERT INTO tb_servico(
+            cod_servico, descricao)
+    VALUES (3, 'Renovação de Matrícula');
+    
+    
+--------------------------------------------------------------    
+INSERT INTO tb_disciplina(
+            cod_disciplina, nome_disciplina)
+    VALUES (1, 'Cálculo I');
+
+INSERT INTO tb_disciplina(
+            cod_disciplina, nome_disciplina)
+    VALUES (2, 'Cálculo II');
+
+INSERT INTO tb_disciplina(
+            cod_disciplina, nome_disciplina)
+    VALUES (3, 'Análise De projetos');
+
+INSERT INTO tb_disciplina(
+            cod_disciplina, nome_disciplina)
+    VALUES (4, 'Introdução a Arquitetura de SW');
+        
+--------------------------------------------------------------
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (1, 1, 8, 1, '1º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (2, 2, 10, 1, '1º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (3, 3, 10, 1, '1º');
+    
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (4, 4, 4, 1, '1º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (5, 1, 6, 1, '2º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (6, 2, 10, 1, '2º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (7, 3, 9, 1, '2º');
+
+INSERT INTO tb_disciplinas_notas(
+            cod_disciplina_nota, cod_disciplina, nota, cod_aluno, semestre)
+    VALUES (8, 4, 7, 1, '2º');
+
+
+  --------------------------------------------------------------
