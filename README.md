@@ -1,6 +1,5 @@
 # Name: SprinGular
-Angular JS +
-Spring + Spring Security
+Angular JS + Spring + Spring Security +
 PostgreSQL +
 Hibernate + JPA
 Enjoy!
